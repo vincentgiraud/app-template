@@ -38,7 +38,7 @@ The template uses ~2–4x more Copilot premium requests than plain vibe coding. 
 | Technical Writer (docs) | $400–600 | ~$1 in premium requests | 99% |
 | **Total daily equivalent** | **$3,900–6,100** | **~$16** | |
 
-> These are not full-time replacements — they're per-task equivalents. The AI handles the 80% that's routine; you handle the 20% that requires judgment. Token costs assume Copilot Enterprise where premium requests are included in your plan.
+> These are not full-time replacements — they're per-task equivalents. The AI handles the 80% that's routine; you handle the 20% that requires judgment. Day rates are US contractor averages (2026). Token costs assume Copilot Enterprise where premium requests are included in your plan. Actual costs vary by project complexity and model usage.
 
 ### What you still need to do yourself
 
