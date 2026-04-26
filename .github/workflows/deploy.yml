@@ -9,8 +9,6 @@ permissions:
   id-token: write
   contents: read
 
-env:
-
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
