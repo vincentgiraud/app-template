@@ -9,7 +9,8 @@ tools:
     edit,
     search,
     web,
-    todo
+    todo,
+    terminal
   ]
 agents:
   [
@@ -141,7 +142,67 @@ The Azure SaaS Planner will run its own guided discovery — since many paramete
 
 **If none of the triggers match**, skip this phase and proceed to the summary.
 
-### Step 6: Summary
+### Step 6: Create GitHub Issues (conditional)
+
+After all specs are generated and written, check if the project has a GitHub remote configured. If yes, offer to auto-create GitHub Issues from the task plan.
+
+**Ask the user:**
+```
+📋 The task plan has {N} tasks across {M} phases.
+Want me to create GitHub Issues for each task? This enables:
+- Assigning tasks to Copilot cloud agent for parallel work
+- Tracking progress on the GitHub Issues board
+- Dependencies linked via issue references
+
+[Yes — create all issues / Yes — Phase 1 only / No — I'll create them manually]
+```
+
+**If the user confirms**, create issues using the terminal tool:
+
+For each task in `project-tasks.instructions.md`:
+
+```bash
+gh issue create \
+  --title "[Task {id}]: {task name}" \
+  --body "{description}
+
+**Files/Areas:** {files}
+**Dependencies:** {deps or 'None'}
+**Complexity:** {S/M/L}
+**Phase:** {phase number} — {phase name}
+
+_Auto-generated from project-tasks.instructions.md_" \
+  --label "task,{area}" \
+  --milestone "{Phase N}"
+```
+
+Where `{area}` is mapped from the task's files:
+- `apps/web/**` → `frontend`
+- `apps/api/**`, `src/api/**` → `backend`
+- `infra/**`, `azure.yaml` → `infrastructure`
+- `functions/**` → `functions`
+- `packages/shared/**` → `shared`
+- `docs/**` → `documentation`
+
+**Create milestones first** (one per phase) before creating issues:
+```bash
+gh api repos/{owner}/{repo}/milestones -f title="Phase {N}: {name}" -f state=open
+```
+
+**After creating issues**, present a summary:
+```
+✅ Created {N} issues across {M} milestones.
+   Phase 1: {count} issues (Tasks 1.1–1.{n})
+   Phase 2: {count} issues (Tasks 2.1–2.{n})
+   ...
+
+Assign tasks to Copilot: go to any issue → Assignees → select "Copilot"
+Tasks without dependencies can be assigned in parallel.
+```
+
+**If no GitHub remote or user declines**, skip and proceed to the summary.
+
+### Step 7: Summary
 
 Present the final summary:
 
@@ -158,16 +219,19 @@ Files created in .github/instructions/:
 {If Azure phase ran:}
   📄 docs/stack-report.md                      — Azure infrastructure report
 
+{If issues were created:}
+  🎫 {N} GitHub Issues created across {M} milestones
+
 These specs are now active Copilot context. When you edit files matching
 the applyTo patterns, Copilot will automatically reference the relevant specs.
 
 💡 Next steps:
 1. Review the specs — edit any file to refine
 2. Commit the generated specs: `git add -A && git commit -m "docs: add project specs"`
-3. Start building — pick one:
-   a. **VS Code Agent mode**: "Implement Task 1.1 from project-tasks"
-   b. **Cloud agent**: Create a GitHub Issue for a task, assign to Copilot → gets a PR
-   c. **Both in parallel**: Work on complex tasks in Agent mode, delegate simpler ones to cloud agent via Issues
+3. Start building:
+   - Assign issues to Copilot cloud agent for parallel work
+   - Work on complex tasks yourself in VS Code Agent mode
+   - Tasks without dependencies can run in parallel
 ```
 
 ## Error Handling

@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
-        if: hashFiles('pnpm-lock.yaml') != ''
+        if: hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
         with:
           version: latest
 
@@ -46,13 +46,22 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies (pnpm)
+      - name: Install Node dependencies (pnpm — locked)
         if: hashFiles('pnpm-lock.yaml') != ''
         run: pnpm install --frozen-lockfile
 
-      - name: Install Node dependencies (npm)
+      - name: Install Node dependencies (npm — locked)
         if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
+
+      - name: Install Node dependencies (no lock file)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == '' && hashFiles('package-lock.json') == ''
+        run: |
+          if [ -f pnpm-workspace.yaml ]; then
+            pnpm install
+          else
+            npm install
+          fi
 
       - name: Install Python dependencies (uv)
         if: hashFiles('uv.lock') != ''
@@ -70,11 +79,11 @@ jobs:
         run: dotnet restore
 
       - name: Lint (Node — pnpm)
-        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
         run: pnpm run lint
 
       - name: Lint (Node — npm)
-        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') == ''
         run: npm run lint
 
       - name: Lint (Python — uv)
@@ -120,7 +129,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
-        if: hashFiles('pnpm-lock.yaml') != ''
+        if: hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
         with:
           version: latest
 
@@ -142,13 +151,22 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies (pnpm)
+      - name: Install Node dependencies (pnpm — locked)
         if: hashFiles('pnpm-lock.yaml') != ''
         run: pnpm install --frozen-lockfile
 
-      - name: Install Node dependencies (npm)
+      - name: Install Node dependencies (npm — locked)
         if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
+
+      - name: Install Node dependencies (no lock file)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == '' && hashFiles('package-lock.json') == ''
+        run: |
+          if [ -f pnpm-workspace.yaml ]; then
+            pnpm install
+          else
+            npm install
+          fi
 
       - name: Install Python dependencies (uv)
         if: hashFiles('uv.lock') != ''
@@ -166,11 +184,11 @@ jobs:
         run: dotnet restore
 
       - name: Test (Node — pnpm)
-        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
         run: pnpm test
 
       - name: Test (Node — npm)
-        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') == ''
         run: npm test
 
       - name: Test (Python — uv)
@@ -200,7 +218,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
-        if: hashFiles('pnpm-lock.yaml') != ''
+        if: hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
         with:
           version: latest
 
@@ -222,13 +240,22 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies (pnpm)
+      - name: Install Node dependencies (pnpm — locked)
         if: hashFiles('pnpm-lock.yaml') != ''
         run: pnpm install --frozen-lockfile
 
-      - name: Install Node dependencies (npm)
+      - name: Install Node dependencies (npm — locked)
         if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
+
+      - name: Install Node dependencies (no lock file)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == '' && hashFiles('package-lock.json') == ''
+        run: |
+          if [ -f pnpm-workspace.yaml ]; then
+            pnpm install
+          else
+            npm install
+          fi
 
       - name: Audit Node dependencies (pnpm)
         if: hashFiles('pnpm-lock.yaml') != ''
@@ -282,7 +309,6 @@ jobs:
         if: steps.codeql-langs.outputs.languages != ''
         uses: github/codeql-action/analyze@v3
 
-      # Deterministic SAST — catches OWASP patterns that AI reviews miss.
       - name: Semgrep SAST
         uses: returntocorp/semgrep-action@v1
         with:
@@ -305,7 +331,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
-        if: hashFiles('pnpm-lock.yaml') != ''
+        if: hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
         with:
           version: latest
 
@@ -314,20 +340,29 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Install Node dependencies (pnpm)
+      - name: Install Node dependencies (pnpm — locked)
         if: hashFiles('pnpm-lock.yaml') != ''
         run: pnpm install --frozen-lockfile
 
-      - name: Install Node dependencies (npm)
+      - name: Install Node dependencies (npm — locked)
         if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
 
+      - name: Install Node dependencies (no lock file)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == '' && hashFiles('package-lock.json') == ''
+        run: |
+          if [ -f pnpm-workspace.yaml ]; then
+            pnpm install
+          else
+            npm install
+          fi
+
       - name: Build (pnpm)
-        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
         run: pnpm run build
 
       - name: Build (npm)
-        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') == ''
         run: npm run build
 
       - name: Build (.NET)
@@ -359,7 +394,6 @@ jobs:
           echo "| Security Scan | ${{ needs.security.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
 
-          # Fail if any required job failed (security is allowed to soft-fail)
           if [[ "${{ needs.lint-and-type-check.result }}" == "failure" ]]; then
             echo "::error::Lint & Type Check failed"
             exit 1
