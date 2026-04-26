@@ -23,6 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml') != ''
+        with:
+          version: latest
+
       - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
         with:
@@ -38,8 +43,12 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies
-        if: hashFiles('package-lock.json') != ''
+      - name: Install Node dependencies (pnpm)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Node dependencies (npm)
+        if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
 
       - name: Install Python dependencies
@@ -53,8 +62,12 @@ jobs:
         if: hashFiles('*.sln', '*.csproj') != ''
         run: dotnet restore
 
-      - name: Lint (Node)
-        if: hashFiles('package.json') != ''
+      - name: Lint (Node — pnpm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm run lint
+
+      - name: Lint (Node — npm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm run lint
 
       - name: Lint (Python)
@@ -91,6 +104,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml') != ''
+        with:
+          version: latest
+
       - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
         with:
@@ -106,8 +124,12 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies
-        if: hashFiles('package-lock.json') != ''
+      - name: Install Node dependencies (pnpm)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Node dependencies (npm)
+        if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
 
       - name: Install Python dependencies
@@ -121,8 +143,12 @@ jobs:
         if: hashFiles('*.sln', '*.csproj') != ''
         run: dotnet restore
 
-      - name: Test (Node)
-        if: hashFiles('package.json') != ''
+      - name: Test (Node — pnpm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm test
+
+      - name: Test (Node — npm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm test
 
       - name: Test (Python)
@@ -147,6 +173,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml') != ''
+        with:
+          version: latest
+
       - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
         with:
@@ -162,12 +193,20 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies
-        if: hashFiles('package-lock.json') != ''
+      - name: Install Node dependencies (pnpm)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Node dependencies (npm)
+        if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
 
-      - name: Audit Node dependencies
-        if: hashFiles('package-lock.json') != ''
+      - name: Audit Node dependencies (pnpm)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm audit --audit-level=high || true
+
+      - name: Audit Node dependencies (npm)
+        if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm audit --audit-level=high || true
 
       - name: Audit Python dependencies
@@ -186,7 +225,6 @@ jobs:
         id: codeql-langs
         run: |
           LANGS=""
-          # Only add JS/TS if there are actual source files (not just package.json)
           if find . -name '*.js' -o -name '*.ts' -o -name '*.tsx' -o -name '*.jsx' 2>/dev/null | grep -qv node_modules; then
             LANGS="javascript-typescript"
           fi
@@ -212,8 +250,6 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
       # Deterministic SAST — catches OWASP patterns that AI reviews miss.
-      # This addresses the "AI marking its own homework" problem:
-      # Semgrep finds vulnerabilities deterministically, not probabilistically.
       - name: Semgrep SAST
         uses: returntocorp/semgrep-action@v1
         with:
@@ -235,17 +271,30 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml') != ''
+        with:
+          version: latest
+
       - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
         with:
           node-version: "22"
 
-      - name: Install Node dependencies
-        if: hashFiles('package-lock.json') != ''
+      - name: Install Node dependencies (pnpm)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Node dependencies (npm)
+        if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
 
-      - name: Build
-        if: hashFiles('package.json') != ''
+      - name: Build (pnpm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm run build
+
+      - name: Build (npm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm run build
 
       - name: Build (.NET)
