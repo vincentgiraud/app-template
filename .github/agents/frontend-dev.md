@@ -1,6 +1,7 @@
 ---
 name: Frontend Developer
 description: Specialized agent for React/TypeScript frontend development
+model: ["Claude Sonnet 4.6", "GPT-5 mini", "Gemini 3 Flash"]
 ---
 
 # Frontend Developer Agent

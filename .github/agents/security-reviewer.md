@@ -1,6 +1,7 @@
 ---
 name: Security Reviewer
 description: Adversarial security reviewer that thinks like an attacker. Attempts to find exploitable vulnerabilities in code changes, not just checklist compliance. Use for PR reviews touching auth, APIs, data handling, or user input.
+model: ["Claude Opus 4.6", "GPT-5.4", "Gemini 3.1 Pro"]
 ---
 
 # Security Reviewer Agent

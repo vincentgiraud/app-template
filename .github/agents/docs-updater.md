@@ -1,6 +1,7 @@
 ---
 name: Documentation Updater
 description: Specialized agent for keeping documentation in sync with code changes
+model: ["Claude Sonnet 4.6", "GPT-5 mini", "Gemini 3 Flash"]
 ---
 
 # Documentation Updater Agent

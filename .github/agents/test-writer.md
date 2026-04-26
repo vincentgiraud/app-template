@@ -1,6 +1,7 @@
 ---
 name: Test Writer
 description: Specialized agent for writing and improving test coverage
+model: ["Claude Sonnet 4.6", "GPT-5 mini", "Gemini 3 Flash"]
 ---
 
 # Test Writer Agent
