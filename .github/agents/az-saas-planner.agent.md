@@ -1,5 +1,5 @@
 ---
-name: "Azure SaaS Planner"
+name: az-saas-planner
 description: "Orchestrates the search for the most cost-optimized compliance-ready Azure stack for a SaaS startup. Parses configuration parameters, delegates to specialist sub-agents in phased order, and produces a consolidated report in docs/stack-report.md. Use when: find cost-optimized Azure stack, compliance-ready SaaS infrastructure, Azure startup stack, compare Azure pricing for SaaS."
 model: ["Claude Opus 4.6", "GPT-5.4", "Gemini 3.1 Pro"]
 tools:

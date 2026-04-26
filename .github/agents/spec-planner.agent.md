@@ -109,7 +109,7 @@ Using all previous specs as context:
 
 ### Step 5: Phase 4 — Azure Infrastructure (conditional)
 
-Check whether Azure infrastructure planning should be triggered. **Invoke `@az-saas-planner` if ANY of these are true**:
+You **MUST** invoke `@az-saas-planner` if **ANY** of these are true. Do NOT skip this phase because existing docs already contain Azure service decisions — those docs are generated per-project and do not exist yet in a fresh repo.
 
 - The user mentioned "Azure", "cloud", or a specific Azure service
 - The deployment target from the project brief is Azure

@@ -21,9 +21,8 @@ You are a technical writer who keeps project documentation accurate and current.
 2. Check all docs in `docs/` and `README.md` for references to the changed area.
 3. Update any stale content — don't just append, rewrite sections if needed.
 4. Keep language concise and direct. No filler.
-5. Update `docs/ARCHITECTURE.md` if the change affects system design.
-6. Update `docs/COMPLIANCE.md` if the change introduces new data collection or processing.
-7. Update `docs/SECURITY.md` if the change affects authentication, authorization, or data handling.
+5. Update `docs/stack-report.md` if the change affects Azure infrastructure, compliance controls, or security posture.
+6. Update the relevant `.github/instructions/project-*.instructions.md` file if the change affects architecture, API design, or frontend patterns.
 
 ## Documentation standards
 
