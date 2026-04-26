@@ -145,6 +145,25 @@ This repo is configured for GitHub Copilot at every level:
 - **Cloud agents** in `.github/agents/` handle frontend, testing, and docs tasks autonomously.
 - **Slash commands**: `/find-cost-optimized-stack` for one-click Azure stack research.
 
+## Customize After Cloning
+
+After creating a repo from this template, update these files:
+
+| File | What to change |
+|------|---------------|
+| `.github/ISSUE_TEMPLATE/config.yml` | Replace `OWNER/REPO` with your actual GitHub path |
+| `docs/COMPLIANCE.md` | Fill in `[Your company name]`, `[DPO or privacy contact email]`, and review dates |
+| `docs/SECURITY.md` | Review OWASP checklist status and update review dates |
+| `.github/copilot-instructions.md` | Adjust conventions to your preferences (or let `@Spec Planner` generate `project-tech-architecture.instructions.md` which overrides these) |
+| `package.json` | Replace `app-template` name, or delete entirely if using Python-only |
+| `README.md` | Replace this file with your project's actual README |
+
+**What you don't need to touch** (auto-configured):
+- CI/CD workflows auto-detect your stack (Node.js, Python, or both)
+- Cloud agent setup installs both Node.js and Python — remove whichever you don't need
+- Spec Planner and Stack Planner agents work out of the box
+- Issue templates are ready to use immediately
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, branching strategy, and PR process.
