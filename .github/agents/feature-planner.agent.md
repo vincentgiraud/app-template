@@ -188,12 +188,14 @@ gh api graphql -f query='
 
 ### Step 6: Add to Project Board (if exists)
 
+Find the existing project and add new issues. They'll appear in "Todo" by default and auto-move when assigned/closed:
+
 ```bash
 # Find existing project
-gh project list --owner {owner} --format json
+PROJECT_NUMBER=$(gh project list --owner {owner} --format json | jq -r '.projects[0].number')
 
 # Add each new issue
-gh project item-add {project-number} --owner {owner} --url {issue-url}
+gh project item-add $PROJECT_NUMBER --owner {owner} --url {issue-url}
 ```
 
 ### Step 7: Auto-assign issues to Copilot (optional)

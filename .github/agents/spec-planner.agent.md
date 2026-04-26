@@ -142,9 +142,22 @@ This is the **primary tracking output** — not optional. Check if the project h
 
 #### 5a: Create GitHub Project board
 
+Create the project and save the project number for later steps:
+
 ```bash
-gh project create --owner {owner} --title "{Project Name}" --format json
+# Create the project
+PROJECT_URL=$(gh project create --owner {owner} --title "{Project Name}" --format json | jq -r '.url')
+PROJECT_NUMBER=$(echo "$PROJECT_URL" | grep -oE '[0-9]+$')
+echo "Created project #$PROJECT_NUMBER"
 ```
+
+The default Board view (Todo / In Progress / Done) is created automatically by GitHub. No custom fields or views needed — use labels and milestones for filtering.
+
+**How to use the board:**
+- **Todo**: issues not yet assigned or started
+- **In Progress**: issues assigned to Copilot or being worked on — GitHub moves these automatically when assigned
+- **Done**: closed issues — GitHub moves these automatically when closed
+- Filter by milestone to see a single phase, or by label to see a single area
 
 #### 5b: Create milestones (one per phase)
 
@@ -363,9 +376,13 @@ gh api graphql -f query='mutation {
 
 #### 5g: Add issues to Project board
 
+Add each issue to the project. They'll appear in the "Todo" column by default:
+
 ```bash
-gh project item-add {project-number} --owner {owner} --url {issue-url}
+gh project item-add {PROJECT_NUMBER} --owner {owner} --url {issue-url}
 ```
+
+Issues will automatically move to "In Progress" when assigned and "Done" when closed — no manual board management needed.
 
 #### 5h: Present summary
 
