@@ -11,6 +11,42 @@
 
 Not for you if: you're on Claude Code / Cursor / Windsurf (see alternatives below), you don't use Azure, or you need a framework-specific starter (this is stack-agnostic).
 
+## Why Use This Template
+
+### What you get vs doing it manually
+
+| Task | Without this template | With this template |
+|------|----------------------|-------------------|
+| Write PRD + architecture | 1–3 days | 30 min (review `@Spec Planner` output) |
+| Research Azure stack + pricing | 1–2 days | 20 min (review `@Azure SaaS Planner` output) |
+| Set up CI/CD with security scanning | 4–8 hours | Already done |
+| Write GDPR/SOC 2 compliance docs | 1–2 days | Already done (fill in company details) |
+| Write tests for a feature | 2–3 hours | Assign issue to cloud agent |
+| Security review a PR | 1–2 hours | Semgrep + CodeQL (deterministic) + security-reviewer agent |
+| Update docs after shipping | 1 hour (usually skipped) | Assign issue to cloud agent |
+
+### Cost: AI tokens vs human hours
+
+The template uses ~2–4x more Copilot premium requests than plain vibe coding. Here's what that replaces:
+
+| Role replaced | Day rate (contractor) | AI cost/day | Saving |
+|---------------|----------------------|-------------|--------|
+| Product Manager (spec writing) | $800–1,200 | ~$5 in premium requests | 99% |
+| Solutions Architect (Azure stack) | $1,000–1,500 | ~$5 in premium requests | 99% |
+| QA Engineer (test writing) | $500–800 | ~$2 in premium requests | 99% |
+| Security Consultant (OWASP review) | $1,200–2,000 | $0 (Semgrep/CodeQL free) + ~$3 for AI review | 99% |
+| Technical Writer (docs) | $400–600 | ~$1 in premium requests | 99% |
+| **Total daily equivalent** | **$3,900–6,100** | **~$16** | |
+
+> These are not full-time replacements — they're per-task equivalents. The AI handles the 80% that's routine; you handle the 20% that requires judgment. Token costs assume Copilot Enterprise where premium requests are included in your plan.
+
+### What you still need to do yourself
+
+- **Product vision**: The Spec Planner interviews you — it can't dream up the product.
+- **Design decisions**: Review and approve what agents generate. Don't ship blindly.
+- **Complex architecture**: The agents suggest, you decide. Especially for auth flows and data models.
+- **Customer conversations**: No AI replaces talking to users.
+
 ## Platform
 
 This template is **opinionated and built for the GitHub + Azure stack**:
