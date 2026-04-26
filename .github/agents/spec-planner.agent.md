@@ -284,24 +284,37 @@ gh api graphql -f query='
   }' -f blockedId="{blocked_node_id}" -f blockerId="{blocker_node_id}"
 ```
 
-**Relationship strategy:**
-- Create a **parent issue per phase** (e.g., "Phase 1: Core Infrastructure") — phase tasks become sub-issues
-- Set **blocked-by** for cross-phase dependencies (e.g., Phase 2 tasks blocked by Phase 1 auth task)
+**Relationship strategy:**\n- Create a **parent issue per phase** (e.g., \"Phase 1: Core Infrastructure\") — phase tasks become sub-issues
+- **Sub-issues** = phase parent → child tasks (always use for phase → task hierarchy)
+- **Blocked-by** = cross-phase dependencies (e.g., Phase 2 tasks blocked by Phase 1 auth task)
 - Within a phase, use sub-issue ordering to indicate priority
+- Track which issues are blocked — this is used in Step 5f to prevent premature Copilot assignment
 
 #### 5f: Auto-assign issues to Copilot via GraphQL (optional)
 
 After creating issues, offer to auto-assign them to Copilot cloud agent. This requires a `GH_TOKEN` environment variable with a fine-grained PAT (see `.env.example`).
 
+> **CRITICAL: Never assign blocked issues.** Copilot does NOT respect GitHub blocking relationships. If you assign a blocked issue, Copilot will try to build on code that doesn't exist yet, wasting compute and creating broken PRs. Only assign issues whose dependencies are all closed or that have no dependencies.
+
 **Ask the user:**
 ```
-🤖 Want me to auto-assign issues to Copilot cloud agent?
-   This will assign each issue to Copilot with the appropriate custom agent
-   based on the issue's area label.
+🤖 Want me to auto-assign unblocked issues to Copilot cloud agent?
+   {N} issues have no dependencies — safe to assign now (typically Phase 0 + Phase 1).
+   {M} issues are blocked — will skip these (assign manually when unblocked).
 
    Requires: GH_TOKEN in .env with actions, contents, issues, pull-requests permissions.
 
-   [Yes — assign all / Yes — Phase 1 only / No — I'll assign manually]
+   [Yes — assign unblocked / Yes — Phase 0+1 only / No — I'll assign manually]
+```
+
+**Assignment guard** — for each issue, check before assigning:
+1. Does this issue have `Depends on #N` in the body? If yes, are ALL referenced issues closed?
+2. Was a `addBlockedBy` relationship set in Step 5e? If yes, is the blocking issue closed?
+3. Only assign if ALL dependencies are satisfied or the issue has no dependencies.
+
+**If blocked**, skip and log:
+```
+⏭️ Skipping #{number} — blocked by #{blocker} (still open)
 ```
 
 **If the user confirms**, first check that `.env` exists and source it:
@@ -395,7 +408,8 @@ Issues will automatically move to "In Progress" when assigned and "Done" when cl
    Phase 4: {count} issues — Polish & Deployment
 
    Relationships set: {count} sub-issue links, {count} blocking links
-   Copilot assigned: {count} issues ({count} with custom agents)
+   Copilot assigned: {count} unblocked issues ({count} with custom agents)
+   Copilot skipped: {count} blocked issues (assign when dependencies close)
 ```
 
 ### Step 6: Summary

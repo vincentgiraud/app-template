@@ -63,6 +63,16 @@ Based on conventions + existing code, design the feature:
    - Independently testable
    - Self-contained (full context in the issue body)
 4. **Order by dependencies** — Which issues must be done first
+5. **Check for cross-feature dependencies** — Query open issues to see if this feature depends on existing work:
+   ```bash
+   gh issue list --state open --json number,title,labels,milestone --limit 50
+   ```
+   If the new feature requires code that doesn't exist yet and is covered by an open issue, mark the dependency.
+
+**Milestone selection:**
+- If the feature fits an existing phase milestone (e.g., polish work → "Phase 4: Polish & Deployment"), use it
+- If the feature is large (3+ issues), create a feature-specific milestone: `gh api repos/{owner}/{repo}/milestones -f title="Feature: {name}" -f state=open`
+- If the feature is small (1–2 issues), skip the milestone
 
 Present the plan:
 
@@ -183,8 +193,10 @@ gh api graphql -f query='
 
 **Relationship strategy:**
 - If a Feature Request issue triggered this, make it the **parent** — all task issues become sub-issues
-- Set **blocked-by** between tasks that have dependencies
-- Keep `Depends on #N` text in issue bodies as well (for cloud agent readability)
+- **Sub-issues** = parent feature → child tasks (always use for feature → task hierarchy)
+- **Blocked-by** = task B cannot start until task A is done (use for sequential dependencies within or across features)
+- Keep `Depends on #N` text in issue bodies as well (Copilot cloud agent reads the body, not GitHub relationships)
+- Track which issues are blocked — this is used in Step 7 to prevent premature Copilot assignment
 
 ### Step 6: Add to Project Board (if exists)
 
@@ -202,10 +214,25 @@ gh project item-add $PROJECT_NUMBER --owner {owner} --url {issue-url}
 
 Offer to auto-assign the created issues to Copilot cloud agent with the appropriate custom agent.
 
+> **CRITICAL: Never assign blocked issues.** Copilot does NOT respect GitHub blocking relationships. If you assign a blocked issue, Copilot will try to build on code that doesn't exist yet, wasting compute and creating broken PRs. Only assign issues whose dependencies are all closed or that have no dependencies.
+
 **Ask the user:**
 ```
-🤖 Want me to assign these issues to Copilot cloud agent?
+🤖 Want me to assign unblocked issues to Copilot cloud agent?
+   {N} issues have no dependencies — safe to assign now.
+   {M} issues are blocked — will skip these (assign manually when unblocked).
+
    [Yes / No — I'll assign manually]
+```
+
+**Assignment guard** — for each issue, check before assigning:
+1. Does this issue have `Depends on #N` in the body? If yes, are ALL referenced issues closed?
+2. Was a `addBlockedBy` relationship set in Step 5? If yes, is the blocking issue closed?
+3. Only assign if ALL dependencies are satisfied (closed) or the issue has no dependencies.
+
+**If blocked**, skip the issue and log it:
+```
+⏭️ Skipping #{number} — blocked by #{blocker} (still open)
 ```
 
 **If the user confirms**, source `.env` and get the Copilot bot ID:
@@ -277,7 +304,8 @@ Relationships:
   Blocking: #{blocker} blocks #{blocked}
 
 {If assigned:}
-  🤖 Copilot assigned: {count} issues ({count} with custom agents)
+  🤖 Copilot assigned: {count} unblocked issues ({count} with custom agents)
+  ⏭️ Skipped: {count} blocked issues (assign when dependencies close)
   Monitor: `gh issue list --assignee copilot-swe-agent`
 ```
 
