@@ -85,6 +85,7 @@ azd up             # Deploy to Azure
 | `frontend-dev` | React/TypeScript feature implementation |
 | `test-writer` | Test coverage and quality |
 | `docs-updater` | Documentation sync with code changes |
+| `security-reviewer` | Adversarial security review — thinks like an attacker |
 
 ### CI/CD Pipelines
 

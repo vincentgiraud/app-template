@@ -157,6 +157,22 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
+      # Deterministic SAST — catches OWASP patterns that AI reviews miss.
+      # This addresses the "AI marking its own homework" problem:
+      # Semgrep finds vulnerabilities deterministically, not probabilistically.
+      - name: Semgrep SAST
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/javascript
+            p/typescript
+            p/python
+            p/secrets
+        env:
+          SEMGREP_RULES: p/owasp-top-ten p/secrets
+        continue-on-error: true
+
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -184,3 +200,35 @@ jobs:
           name: build-output
           path: dist/
           retention-days: 7
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [lint-and-type-check, test, security, build]
+    if: always()
+    steps:
+      - name: Check job results
+        run: |
+          echo "## Quality Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint & Type Check | ${{ needs.lint-and-type-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scan | ${{ needs.security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+
+          # Fail if any required job failed (security is allowed to soft-fail)
+          if [[ "${{ needs.lint-and-type-check.result }}" == "failure" ]]; then
+            echo "::error::Lint & Type Check failed"
+            exit 1
+          fi
+          if [[ "${{ needs.test.result }}" == "failure" ]]; then
+            echo "::error::Tests failed"
+            exit 1
+          fi
+          if [[ "${{ needs.build.result }}" == "failure" ]]; then
+            echo "::error::Build failed"
+            exit 1
+          fi
+          echo "All required quality gates passed."

@@ -62,13 +62,23 @@
 
 ## Security Scanning
 
-| Tool | What | When |
-|------|------|------|
-| GitHub CodeQL | SAST — static analysis for vulnerability patterns | Every PR and push to main |
-| npm audit | Dependency vulnerabilities | Every CI run |
-| Dependabot | Automated dependency updates | Continuous |
-| GitHub Secret Scanning | Leaked secrets in commits | Continuous |
-| Azure Front Door WAF | OWASP protection at edge | Runtime |
+Three layers — deterministic tools catch known patterns, AI catches logic flaws:
+
+| Layer | Tool | What | When |
+|-------|------|------|------|
+| **Deterministic SAST** | Semgrep | OWASP Top 10 patterns, secrets, injection | Every PR (CI) |
+| **Semantic SAST** | GitHub CodeQL | Data flow analysis, taint tracking | Every PR (CI) |
+| **Dependency audit** | npm audit / pip-audit | Known CVEs in dependencies | Every CI run |
+| **Dependency updates** | Dependabot | Automated security PRs | Continuous |
+| **Secret detection** | GitHub Secret Scanning | Leaked secrets in commits | Continuous |
+| **Runtime protection** | Azure Front Door WAF | OWASP rules at edge | Runtime |
+| **Adversarial review** | `security-reviewer` agent | Exploit-focused PR review | On request / high-risk PRs |
+
+### Why both Semgrep AND CodeQL AND an AI reviewer?
+
+- **Semgrep**: Fast, deterministic, pattern-based. Catches known OWASP patterns (SQL injection via string concat, XSS via unsafe rendering) with zero false negatives for its ruleset.
+- **CodeQL**: Slower, deeper. Traces data flow across functions to find taint propagation that pattern matching misses.
+- **security-reviewer agent**: Thinks like an attacker. Catches logic flaws (IDOR, auth bypass, race conditions) that no SAST tool can detect — but is probabilistic, not guaranteed. Never reviews code it wrote in the same session.
 
 ## Incident Response
 
