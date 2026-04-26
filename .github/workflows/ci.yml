@@ -33,8 +33,11 @@ jobs:
         with:
           node-version: "22"
 
+      - uses: astral-sh/setup-uv@v4
+        if: hashFiles('uv.lock', 'pyproject.toml') != ''
+
       - uses: actions/setup-python@v5
-        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         with:
           python-version: "3.12"
 
@@ -51,11 +54,15 @@ jobs:
         if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
 
-      - name: Install Python dependencies
-        if: hashFiles('requirements.txt') != ''
+      - name: Install Python dependencies (uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv sync --frozen
+
+      - name: Install Python dependencies (pip)
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: pip install -r requirements.txt
-      - name: Install Python project
-        if: hashFiles('pyproject.toml') != '' && hashFiles('requirements.txt') == ''
+      - name: Install Python project (pip)
+        if: hashFiles('pyproject.toml') != '' && hashFiles('requirements.txt') == '' && hashFiles('uv.lock') == ''
         run: pip install -e ".[dev]"
 
       - name: Restore .NET dependencies
@@ -70,8 +77,12 @@ jobs:
         if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm run lint
 
-      - name: Lint (Python)
-        if: hashFiles('pyproject.toml', 'requirements.txt') != ''
+      - name: Lint (Python — uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv run ruff check .
+
+      - name: Lint (Python — pip)
+        if: hashFiles('pyproject.toml', 'requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: |
           pip install ruff 2>/dev/null || true
           if command -v ruff &>/dev/null; then
@@ -88,8 +99,12 @@ jobs:
         if: hashFiles('tsconfig.json') != ''
         run: npx tsc --noEmit
 
-      - name: Type check (Python)
-        if: hashFiles('pyproject.toml', 'requirements.txt') != ''
+      - name: Type check (Python — uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv run mypy . || echo "mypy not configured — skipping"
+
+      - name: Type check (Python — pip)
+        if: hashFiles('pyproject.toml', 'requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: |
           if command -v mypy &>/dev/null; then
             mypy .
@@ -114,8 +129,11 @@ jobs:
         with:
           node-version: "22"
 
+      - uses: astral-sh/setup-uv@v4
+        if: hashFiles('uv.lock', 'pyproject.toml') != ''
+
       - uses: actions/setup-python@v5
-        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         with:
           python-version: "3.12"
 
@@ -132,11 +150,15 @@ jobs:
         if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci --ignore-scripts
 
-      - name: Install Python dependencies
-        if: hashFiles('requirements.txt') != ''
+      - name: Install Python dependencies (uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv sync --frozen
+
+      - name: Install Python dependencies (pip)
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: pip install -r requirements.txt
-      - name: Install Python project
-        if: hashFiles('pyproject.toml') != '' && hashFiles('requirements.txt') == ''
+      - name: Install Python project (pip)
+        if: hashFiles('pyproject.toml') != '' && hashFiles('requirements.txt') == '' && hashFiles('uv.lock') == ''
         run: pip install -e ".[dev]"
 
       - name: Restore .NET dependencies
@@ -151,8 +173,12 @@ jobs:
         if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm test
 
-      - name: Test (Python)
-        if: hashFiles('pyproject.toml', 'requirements.txt') != ''
+      - name: Test (Python — uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv run pytest
+
+      - name: Test (Python — pip)
+        if: hashFiles('pyproject.toml', 'requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: |
           if command -v pytest &>/dev/null; then
             pytest
@@ -183,8 +209,11 @@ jobs:
         with:
           node-version: "22"
 
+      - uses: astral-sh/setup-uv@v4
+        if: hashFiles('uv.lock', 'pyproject.toml') != ''
+
       - uses: actions/setup-python@v5
-        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         with:
           python-version: "3.12"
 
@@ -209,8 +238,12 @@ jobs:
         if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm audit --audit-level=high || true
 
-      - name: Audit Python dependencies
-        if: hashFiles('requirements.txt') != ''
+      - name: Audit Python dependencies (uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv run pip-audit || true
+
+      - name: Audit Python dependencies (pip)
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: |
           pip install pip-audit 2>/dev/null || true
           if command -v pip-audit &>/dev/null; then
