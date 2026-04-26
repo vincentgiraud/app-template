@@ -33,7 +33,7 @@ Once the Spec Planner generates `project-tech-architecture.instructions.md`, tha
 
 ## Security Requirements (OWASP)
 
-- **Input validation**: Validate and sanitize all user input at API boundaries. Use zod (TS), pydantic (Python), or equivalent schema validation.
+- **Input validation**: Validate and sanitize all user input at API boundaries. Use zod (TS), pydantic (Python), FluentValidation (.NET), or equivalent schema validation.
 - **Authentication**: Never store secrets in code or environment variables in the repo. Use Azure Key Vault.
 - **SQL injection**: Use parameterized queries or ORM only. No string concatenation in queries.
 - **XSS**: Escape all user-generated content rendered in HTML. React handles this by default — never use `dangerouslySetInnerHTML`.

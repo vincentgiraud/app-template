@@ -68,7 +68,7 @@ Three layers — deterministic tools catch known patterns, AI catches logic flaw
 |-------|------|------|------|
 | **Deterministic SAST** | Semgrep | OWASP Top 10 patterns, secrets, injection | Every PR (CI) |
 | **Semantic SAST** | GitHub CodeQL | Data flow analysis, taint tracking | Every PR (CI) |
-| **Dependency audit** | npm audit / pip-audit | Known CVEs in dependencies | Every CI run |
+| **Dependency audit** | npm audit / pip-audit / dotnet list --vulnerable | Known CVEs in dependencies | Every CI run |
 | **Dependency updates** | Dependabot | Automated security PRs | Continuous |
 | **Secret detection** | GitHub Secret Scanning | Leaked secrets in commits | Continuous |
 | **Runtime protection** | Azure Front Door WAF | OWASP rules at edge | Runtime |

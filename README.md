@@ -246,7 +246,7 @@ After creating a repo from this template, update these files:
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, branching strategy, and PR process.
+All changes go through PRs with CI checks. No direct pushes to main. See `.github/copilot-instructions.md` for commit conventions and coding standards.
 
 ## License
 
