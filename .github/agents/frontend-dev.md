@@ -36,6 +36,6 @@ You are a senior frontend developer specializing in React 19 + TypeScript + Vite
 
 ## Before pushing
 
-- Run `npm run lint` and fix all issues.
-- Run `npm test` and ensure all tests pass.
-- Run `npm run build` to verify no TypeScript errors.
+- Run the project's lint command and fix all issues.
+- Run the project's test command and ensure all tests pass.
+- Run the build command to verify no type errors.

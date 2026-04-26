@@ -3,6 +3,9 @@
 # when it works on issues in this repository.
 #
 # Docs: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/configure-dev-environment
+#
+# Customize these steps based on your project's tech stack.
+# The Spec Planner will recommend the right setup when you generate your project.
 
 steps:
   - name: Setup Node.js
@@ -10,18 +13,30 @@ steps:
     with:
       node-version: "22"
 
-  - name: Install dependencies
-    run: npm ci
+  - name: Setup Python
+    uses: actions/setup-python@v5
+    with:
+      python-version: "3.12"
+
+  - name: Install Node dependencies
+    run: |
+      if [ -f package-lock.json ]; then
+        npm ci
+      fi
+
+  - name: Install Python dependencies
+    run: |
+      if [ -f requirements.txt ]; then
+        pip install -r requirements.txt
+      elif [ -f pyproject.toml ]; then
+        pip install -e ".[dev]"
+      fi
 
   - name: Install Azure Developer CLI
     uses: Azure/setup-azd@v2
 
-  - name: Install Azure CLI
-    run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
   - name: Verify tools
     run: |
       node --version
-      npm --version
+      python3 --version
       azd version
-      az --version

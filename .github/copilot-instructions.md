@@ -8,8 +8,10 @@ This is a SaaS web application with a companion Microsoft 365 declarative agent,
 
 ## Tech Stack
 
+The tech stack is determined when you run `@Spec Planner`. Common combinations:
+
 - **Frontend**: React 19 + TypeScript + Vite
-- **Backend**: Node.js + TypeScript (Express or Hono)
+- **Backend**: Node.js + TypeScript, Python + FastAPI, .NET, or other (chosen per project)
 - **Database**: Azure SQL or Cosmos DB (confirm per project)
 - **Auth**: Azure AD B2C (customer-facing), Entra ID (admin/internal)
 - **Hosting**: Azure Container Apps (web app), Azure Functions (event-driven tasks)
@@ -17,25 +19,27 @@ This is a SaaS web application with a companion Microsoft 365 declarative agent,
 - **Deployment**: Azure Developer CLI (`azd`) via GitHub Actions
 - **M365 Agent**: Declarative agent with API plugin, built with M365 Agents Toolkit
 
+Once the Spec Planner generates `project-tech-architecture.instructions.md`, that file becomes the source of truth for the stack.
+
 ## Code Conventions
 
-- Use TypeScript strict mode everywhere. No `any` types unless absolutely necessary.
-- Prefer named exports over default exports.
-- Use `async`/`await` over `.then()` chains.
-- Error handling: throw typed errors, catch at boundaries. No silent swallows.
-- File naming: `kebab-case.ts` for files, `PascalCase` for components.
-- Tests: colocate test files as `*.test.ts` next to source files.
+- Use strict typing everywhere. TypeScript strict mode for TS projects; type hints + mypy for Python; etc.
+- Error handling: throw/raise typed errors, catch at boundaries. No silent swallows.
+- File naming: `kebab-case` for files, `PascalCase` for components/classes.
+- Tests: colocate test files next to source files when the framework supports it.
 - Prefer small, focused functions. Each function should do one thing.
+- Prefer named exports over default exports (JS/TS projects).
+- Use `async`/`await` over callback chains.
 
 ## Security Requirements (OWASP)
 
-- **Input validation**: Validate and sanitize all user input at API boundaries. Use zod or similar schema validation.
+- **Input validation**: Validate and sanitize all user input at API boundaries. Use zod (TS), pydantic (Python), or equivalent schema validation.
 - **Authentication**: Never store secrets in code or environment variables in the repo. Use Azure Key Vault.
-- **SQL injection**: Use parameterized queries only. No string concatenation in queries.
+- **SQL injection**: Use parameterized queries or ORM only. No string concatenation in queries.
 - **XSS**: Escape all user-generated content rendered in HTML. React handles this by default — never use `dangerouslySetInnerHTML`.
 - **CSRF**: Use anti-CSRF tokens for state-changing requests.
 - **Rate limiting**: Apply rate limiting to all public API endpoints.
-- **Dependencies**: Keep dependencies minimal. Audit with `npm audit` before adding new packages.
+- **Dependencies**: Keep dependencies minimal. Audit before adding new packages (`npm audit`, `pip audit`, `safety check`, etc.).
 - **Secrets**: Never log secrets, tokens, passwords, or PII. Never commit `.env` files.
 
 ## GDPR / Data Privacy
@@ -56,7 +60,7 @@ This is a SaaS web application with a companion Microsoft 365 declarative agent,
 
 ## Testing
 
-- Write unit tests for business logic. Use Vitest.
+- Write unit tests for business logic. Use the project's test framework (Vitest for TS, pytest for Python, etc.).
 - Write integration tests for API endpoints.
 - Minimum test coverage goal: 80% for new code.
 - Tests must pass before merge (enforced by CI).
@@ -73,6 +77,6 @@ This is a SaaS web application with a companion Microsoft 365 declarative agent,
 When working as a cloud agent on assigned issues:
 - Read the full issue description and acceptance criteria before starting.
 - Create a plan as the first commit message or PR description.
-- Run `npm test` and `npm run lint` before pushing. Fix any failures.
+- Run the project's test and lint commands before pushing. Fix any failures.
 - If tests don't exist for the area you're changing, add them.
 - If you're unsure about a design decision, leave a comment on the PR asking for guidance rather than guessing.

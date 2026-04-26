@@ -9,6 +9,9 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
@@ -22,12 +25,26 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
+        if: hashFiles('package.json') != ''
         with:
           node-version: "22"
-          cache: "npm"
 
-      - run: npm ci
-      - run: npm run build
+      - uses: actions/setup-python@v5
+        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        with:
+          python-version: "3.12"
+
+      - name: Install Node dependencies
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+
+      - name: Install Python dependencies
+        if: hashFiles('requirements.txt') != ''
+        run: pip install -r requirements.txt
+
+      - name: Build (Node)
+        if: hashFiles('package.json') != ''
+        run: npm run build
 
       - name: Install Azure Developer CLI
         uses: Azure/setup-azd@v2
@@ -65,12 +82,26 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
+        if: hashFiles('package.json') != ''
         with:
           node-version: "22"
-          cache: "npm"
 
-      - run: npm ci
-      - run: npm run build
+      - uses: actions/setup-python@v5
+        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        with:
+          python-version: "3.12"
+
+      - name: Install Node dependencies
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+
+      - name: Install Python dependencies
+        if: hashFiles('requirements.txt') != ''
+        run: pip install -r requirements.txt
+
+      - name: Build (Node)
+        if: hashFiles('package.json') != ''
+        run: npm run build
 
       - name: Install Azure Developer CLI
         uses: Azure/setup-azd@v2

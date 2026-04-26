@@ -54,7 +54,7 @@ graph TB
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
 | Frontend framework | React 19 + Vite | Mature ecosystem, TypeScript-first, fast builds |
-| Backend runtime | Node.js + TypeScript | Shared language with frontend, Azure-native support |
+| Backend runtime | TBD (Node.js / Python / .NET) | Determined by Spec Planner based on project needs |
 | Hosting | Azure Container Apps | Serverless containers, scale-to-zero, built-in ingress |
 | Database | TBD (Azure SQL or Cosmos DB) | Depends on data model — relational vs document |
 | Auth (customers) | Azure AD B2C | GDPR-compliant, customizable flows, MFA built-in |
@@ -65,7 +65,7 @@ graph TB
 ## API Design
 
 - RESTful API with versioned paths: `/api/v1/...`
-- Request/response validation with zod schemas
+- Request/response validation with schema validation (zod for TS, pydantic for Python, etc.)
 - Consistent error format: `{ error: { code, message, details? } }`
 - Rate limiting on all public endpoints
 - CORS restricted to known origins
