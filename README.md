@@ -59,6 +59,8 @@ This template is **opinionated and built for the GitHub + Azure stack**:
 
 The `.agent.md` and `.instructions.md` files use [GitHub Copilot's agent/instruction format](https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions). The cloud agent setup (`copilot-setup-steps.yml`) is GitHub-specific. The CI/CD workflows are GitHub Actions.
 
+> **Note on private repos**: CodeQL (semantic SAST) is free for public repos but requires [GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security) for private repos (included with GitHub Enterprise). Semgrep, dependency audits, and all other CI checks work on both public and private repos at no extra cost.
+
 **This will not work with** Claude Code CLI, Cursor, Windsurf, or other AI coding tools — those use different file formats (CLAUDE.md, .cursorrules, etc.). If you use those tools, look at [gstack](https://github.com/garrytan/gstack), [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin), or [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) instead.
 
 ## Quick Start
