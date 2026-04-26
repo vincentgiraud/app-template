@@ -1,0 +1,71 @@
+name: "Feature Request"
+description: "Propose a new feature or enhancement"
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to propose a feature!
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this feature solve? Who is affected?
+      placeholder: "As a [user type], I want to [action] so that [benefit]."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the desired behavior or implementation approach.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How do we know this feature is complete? List testable criteria.
+      placeholder: |
+        - [ ] User can ...
+        - [ ] API returns ...
+        - [ ] Tests cover ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Frontend
+        - Backend / API
+        - Infrastructure
+        - M365 Agent
+        - Documentation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Estimated Complexity
+      description: How complex do you think this is?
+      options:
+        - Low (< 1 hour)
+        - Medium (1-4 hours)
+        - High (> 4 hours)
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Screenshots, mockups, links, or related issues.
+    validations:
+      required: false

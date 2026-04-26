@@ -1,0 +1,27 @@
+# Environment setup for GitHub Copilot cloud agent
+# This file defines how the cloud agent's development environment is configured
+# when it works on issues in this repository.
+#
+# Docs: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/configure-dev-environment
+
+steps:
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: "22"
+
+  - name: Install dependencies
+    run: npm ci
+
+  - name: Install Azure Developer CLI
+    uses: Azure/setup-azd@v2
+
+  - name: Install Azure CLI
+    run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+  - name: Verify tools
+    run: |
+      node --version
+      npm --version
+      azd version
+      az --version
