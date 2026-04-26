@@ -42,7 +42,7 @@ Return this exact structure:
 ```markdown
 ---
 description: "Frontend component guidelines, page layouts, design system tokens, and state management patterns for {project name}. Reference when building UI components and pages."
-applyTo: "src/components/**,src/pages/**,src/app/**,**/*.tsx,**/*.jsx,**/*.css"
+applyTo: "src/components/**,src/pages/**,src/app/**,apps/web/**"
 ---
 
 # Frontend Guidelines — {Project Name}

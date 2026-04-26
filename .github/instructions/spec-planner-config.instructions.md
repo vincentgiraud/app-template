@@ -15,10 +15,10 @@ All specs are written to `.github/instructions/` with `applyTo` patterns so Copi
 | File | Purpose | `applyTo` |
 |------|---------|-----------|
 | `project-prd.instructions.md` | Product requirements, user stories, acceptance criteria | `**` |
-| `project-tech-architecture.instructions.md` | Tech stack, architecture decisions, infrastructure | `**` |
-| `project-frontend.instructions.md` | UI patterns, component guidelines, design system | `src/components/**,src/pages/**,src/app/**,**/*.tsx,**/*.jsx,**/*.css` |
-| `project-backend.instructions.md` | API design, database schema, business logic patterns | `src/api/**,src/server/**,src/lib/**,**/*.ts,**/*.py,**/*.cs` |
-| `project-tasks.instructions.md` | Ordered implementation plan with phases and dependencies | `**` |
+| `project-tech-architecture.instructions.md` | Tech stack, architecture decisions, infrastructure | `src/**,apps/**,packages/**,infra/**` |
+| `project-frontend.instructions.md` | UI patterns, component guidelines, design system | `src/components/**,src/pages/**,src/app/**,apps/web/**` |
+| `project-backend.instructions.md` | API design, database schema, business logic patterns | `src/api/**,src/server/**,src/lib/**,apps/api/**,functions/**,packages/shared/**` |
+| `project-tasks.instructions.md` | Ordered implementation plan with phases and dependencies | _(no applyTo — loaded by description match only)_ |
 
 ## Spec Quality Standards
 

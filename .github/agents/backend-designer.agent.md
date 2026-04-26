@@ -39,7 +39,7 @@ Return this exact structure:
 ```markdown
 ---
 description: "API endpoints, database schema, business logic patterns, and auth flows for {project name}. Reference when building API routes, database models, and server-side logic."
-applyTo: "src/api/**,src/server/**,src/lib/**,**/*.ts,**/*.py,**/*.cs"
+applyTo: "src/api/**,src/server/**,src/lib/**,apps/api/**,functions/**,packages/shared/**"
 ---
 
 # Backend Design — {Project Name}

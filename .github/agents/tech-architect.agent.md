@@ -57,7 +57,7 @@ Return this exact structure:
 ```markdown
 ---
 description: "Tech stack, architecture decisions, and project structure for {project name}. Reference this spec for framework choices, directory layout, and infrastructure decisions."
-applyTo: "**"
+applyTo: "src/**,apps/**,packages/**,infra/**"
 ---
 
 # Tech Architecture — {Project Name}

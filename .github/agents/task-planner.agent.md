@@ -56,7 +56,6 @@ Return this exact structure:
 ```markdown
 ---
 description: "Ordered implementation plan for {project name}. Follow this task list sequentially — each task builds on the previous. Reference when deciding what to build next."
-applyTo: "**"
 ---
 
 # Implementation Plan — {Project Name}
