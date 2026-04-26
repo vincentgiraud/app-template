@@ -149,12 +149,29 @@ jobs:
             pip-audit -r requirements.txt || true
           fi
 
+      - name: Detect CodeQL languages
+        id: codeql-langs
+        run: |
+          LANGS=""
+          # Only add JS/TS if there are actual source files (not just package.json)
+          if find . -name '*.js' -o -name '*.ts' -o -name '*.tsx' -o -name '*.jsx' 2>/dev/null | grep -qv node_modules; then
+            LANGS="javascript-typescript"
+          fi
+          if find . -name '*.py' 2>/dev/null | grep -q .; then
+            [ -n "$LANGS" ] && LANGS="$LANGS,"
+            LANGS="${LANGS}python"
+          fi
+          echo "languages=$LANGS" >> "$GITHUB_OUTPUT"
+          echo "Detected CodeQL languages: ${LANGS:-none}"
+
       - name: Initialize CodeQL
+        if: steps.codeql-langs.outputs.languages != ''
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript-typescript,python
+          languages: ${{ steps.codeql-langs.outputs.languages }}
 
       - name: Perform CodeQL Analysis
+        if: steps.codeql-langs.outputs.languages != ''
         uses: github/codeql-action/analyze@v3
 
       # Deterministic SAST — catches OWASP patterns that AI reviews miss.
