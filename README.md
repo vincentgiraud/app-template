@@ -137,18 +137,38 @@ azd up             # Deploy to Azure
 
 ## Development Workflow
 
+Every feature follows the same loop. Each phase has tools ready — you pick where to start.
+
 ```
-Idea → Spec Planner → Stack Planner → Build → Review → Deploy
-         (agents)       (agents)      (code)   (CI)    (azd)
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   1. IDEATE ──→ 2. SPEC ──→ 3. STACK ──→ 4. BUILD         │
+│      (you)      (6 agents)   (10 agents)  (you + cloud     │
+│                                             agents)         │
+│                                               │             │
+│   7. REFLECT ←── 6. DEPLOY ←── 5. REVIEW ←───┘             │
+│   (compliance    (azd +        (CI + Semgrep +              │
+│    docs)          GitHub        CodeQL +                    │
+│                   Actions)      security-reviewer)          │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-1. **Spec**: Describe your idea → `@Spec Planner` generates PRD, architecture, task plan.
-2. **Stack**: Auto-chains into `@Azure SaaS Planner` for compliance-ready infra.
-3. **Plan**: Use Copilot Chat (Plan mode) or `/ce-brainstorm` + `/ce-plan` for features.
-4. **Build**: Switch to Agent mode. Follow the generated task plan.
-5. **Parallel work**: Assign well-scoped issues to Copilot cloud agent on GitHub.
-6. **Review**: All PRs require CI pass + code review.
-7. **Deploy**: Merge to main → staging → smoke test → production.
+| Phase | What happens | You do | Agents/tools do |
+|-------|-------------|--------|-----------------|
+| **1. Ideate** | Describe what you want to build | Write a plain-English description | — |
+| **2. Spec** | Generate implementation-ready specs | Answer clarifying questions | `@Spec Planner` → PRD, architecture, frontend/backend design, task plan (6 agents) |
+| **3. Stack** | Research Azure infrastructure | Confirm parameters | `@Azure SaaS Planner` → compliance mapping, service comparison, cost estimate (10 agents, auto-chained) |
+| **4. Build** | Write code, implement features | Work on complex features in Agent mode | Cloud agent handles parallel issues (frontend-dev, test-writer, docs-updater) |
+| **5. Review** | Verify quality and security | Review PRs, approve/reject | CI: lint → test → CodeQL → Semgrep → build. `security-reviewer` agent for high-risk PRs |
+| **6. Deploy** | Ship to Azure | Merge to main (or manual trigger) | GitHub Actions: staging → smoke test → production via `azd` |
+| **7. Reflect** | Update compliance and security posture | Review docs quarterly | docs-updater agent keeps ARCHITECTURE.md, COMPLIANCE.md, SECURITY.md current |
+
+**Where to start:**
+- **New project, no idea yet?** Start at Phase 1 — describe your idea to `@Spec Planner`.
+- **Know what to build?** Start at Phase 4 — create issues, assign to cloud agent.
+- **Existing project, need Azure infra?** Start at Phase 3 — run `/find-cost-optimized-stack`.
+- **Code ready, need to ship?** Start at Phase 6 — run `azd up`.
 
 ## AI-Assisted Development
 
