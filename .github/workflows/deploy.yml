@@ -34,6 +34,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-dotnet@v4
+        if: hashFiles('*.sln', '*.csproj') != ''
+        with:
+          dotnet-version: "9.0.x"
+
       - name: Install Node dependencies
         if: hashFiles('package-lock.json') != ''
         run: npm ci
@@ -42,9 +47,17 @@ jobs:
         if: hashFiles('requirements.txt') != ''
         run: pip install -r requirements.txt
 
+      - name: Restore .NET dependencies
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet restore
+
       - name: Build (Node)
         if: hashFiles('package.json') != ''
         run: npm run build
+
+      - name: Build (.NET)
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet publish -c Release -o publish/
 
       - name: Install Azure Developer CLI
         uses: Azure/setup-azd@v2
@@ -91,6 +104,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-dotnet@v4
+        if: hashFiles('*.sln', '*.csproj') != ''
+        with:
+          dotnet-version: "9.0.x"
+
       - name: Install Node dependencies
         if: hashFiles('package-lock.json') != ''
         run: npm ci
@@ -99,9 +117,17 @@ jobs:
         if: hashFiles('requirements.txt') != ''
         run: pip install -r requirements.txt
 
+      - name: Restore .NET dependencies
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet restore
+
       - name: Build (Node)
         if: hashFiles('package.json') != ''
         run: npm run build
+
+      - name: Build (.NET)
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet publish -c Release -o publish/
 
       - name: Install Azure Developer CLI
         uses: Azure/setup-azd@v2

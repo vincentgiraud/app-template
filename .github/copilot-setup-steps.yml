@@ -18,6 +18,11 @@ steps:
     with:
       python-version: "3.12"
 
+  - name: Setup .NET
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: "9.0.x"
+
   - name: Install Node dependencies
     run: |
       if [ -f package-lock.json ]; then
@@ -32,6 +37,12 @@ steps:
         pip install -e ".[dev]"
       fi
 
+  - name: Install .NET dependencies
+    run: |
+      if [ -f *.sln ] || [ -f *.csproj ]; then
+        dotnet restore
+      fi
+
   - name: Install Azure Developer CLI
     uses: Azure/setup-azd@v2
 
@@ -39,4 +50,5 @@ steps:
     run: |
       node --version
       python3 --version
+      dotnet --version
       azd version

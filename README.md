@@ -107,7 +107,7 @@ azd up             # Deploy to Azure
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 19 + TypeScript + Vite |
-| Backend | Node.js + TypeScript, Python + FastAPI, or other (per project) |
+| Backend | Node.js + TypeScript, Python + FastAPI, .NET, or other (per project) |
 | Database | Azure SQL / Cosmos DB |
 | Auth | Azure AD B2C |
 | Hosting | Azure Container Apps |

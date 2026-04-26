@@ -36,6 +36,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-dotnet@v4
+        if: hashFiles('*.sln', '*.csproj') != ''
+        with:
+          dotnet-version: "9.0.x"
+
       - name: Install Node dependencies
         if: hashFiles('package-lock.json') != ''
         run: npm ci --ignore-scripts
@@ -46,6 +51,10 @@ jobs:
       - name: Install Python project
         if: hashFiles('pyproject.toml') != '' && hashFiles('requirements.txt') == ''
         run: pip install -e ".[dev]"
+
+      - name: Restore .NET dependencies
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet restore
 
       - name: Lint (Node)
         if: hashFiles('package.json') != ''
@@ -60,6 +69,10 @@ jobs:
           else
             echo "No Python linter configured — skipping"
           fi
+
+      - name: Lint (.NET)
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet format --verify-no-changes || true
 
       - name: Type check (TypeScript)
         if: hashFiles('tsconfig.json') != ''
@@ -91,6 +104,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-dotnet@v4
+        if: hashFiles('*.sln', '*.csproj') != ''
+        with:
+          dotnet-version: "9.0.x"
+
       - name: Install Node dependencies
         if: hashFiles('package-lock.json') != ''
         run: npm ci --ignore-scripts
@@ -101,6 +119,10 @@ jobs:
       - name: Install Python project
         if: hashFiles('pyproject.toml') != '' && hashFiles('requirements.txt') == ''
         run: pip install -e ".[dev]"
+
+      - name: Restore .NET dependencies
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet restore
 
       - name: Test (Node)
         if: hashFiles('package.json') != ''
@@ -114,6 +136,10 @@ jobs:
           else
             echo "pytest not installed — skipping"
           fi
+
+      - name: Test (.NET)
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet test --no-restore
 
   security:
     name: Security Scan
@@ -133,6 +159,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-dotnet@v4
+        if: hashFiles('*.sln', '*.csproj') != ''
+        with:
+          dotnet-version: "9.0.x"
+
       - name: Install Node dependencies
         if: hashFiles('package-lock.json') != ''
         run: npm ci --ignore-scripts
@@ -149,6 +180,10 @@ jobs:
             pip-audit -r requirements.txt || true
           fi
 
+      - name: Audit .NET dependencies
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet list package --vulnerable --include-transitive || true
+
       - name: Detect CodeQL languages
         id: codeql-langs
         run: |
@@ -160,6 +195,10 @@ jobs:
           if find . -name '*.py' 2>/dev/null | grep -q .; then
             [ -n "$LANGS" ] && LANGS="$LANGS,"
             LANGS="${LANGS}python"
+          fi
+          if find . -name '*.cs' 2>/dev/null | grep -q .; then
+            [ -n "$LANGS" ] && LANGS="$LANGS,"
+            LANGS="${LANGS}csharp"
           fi
           echo "languages=$LANGS" >> "$GITHUB_OUTPUT"
           echo "Detected CodeQL languages: ${LANGS:-none}"
@@ -185,6 +224,7 @@ jobs:
             p/javascript
             p/typescript
             p/python
+            p/csharp
             p/secrets
         env:
           SEMGREP_RULES: p/owasp-top-ten p/secrets
@@ -209,6 +249,10 @@ jobs:
       - name: Build
         if: hashFiles('package.json') != ''
         run: npm run build
+
+      - name: Build (.NET)
+        if: hashFiles('*.sln', '*.csproj') != ''
+        run: dotnet publish --no-restore -c Release -o publish/
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
