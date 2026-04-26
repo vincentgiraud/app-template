@@ -25,13 +25,21 @@ steps:
 
   - name: Install Node dependencies
     run: |
-      if [ -f package-lock.json ]; then
+      if [ -f pnpm-lock.yaml ] || [ -f pnpm-workspace.yaml ]; then
+        corepack enable
+        pnpm install
+      elif [ -f package-lock.json ]; then
         npm ci
+      elif [ -f package.json ]; then
+        npm install
       fi
 
   - name: Install Python dependencies
     run: |
-      if [ -f requirements.txt ]; then
+      if [ -f uv.lock ]; then
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        uv sync
+      elif [ -f requirements.txt ]; then
         pip install -r requirements.txt
       elif [ -f pyproject.toml ]; then
         pip install -e ".[dev]"

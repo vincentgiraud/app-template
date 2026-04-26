@@ -14,4 +14,4 @@ Architecture, frontend, backend, and task specs are written to `.github/instruct
 
 1. Run `@Spec Planner` with your project idea
 2. Specs are generated in `.github/instructions/`, stack report here in `docs/`
-3. The `docs-updater` cloud agent keeps docs current as code changes
+4. The `@Documentation Updater` cloud agent keeps docs current as code changes

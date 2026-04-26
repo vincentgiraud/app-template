@@ -21,13 +21,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
+        with:
+          version: latest
+
       - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
         with:
           node-version: "22"
 
+      - uses: astral-sh/setup-uv@v4
+        if: hashFiles('uv.lock', 'pyproject.toml') != ''
+
       - uses: actions/setup-python@v5
-        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         with:
           python-version: "3.12"
 
@@ -36,20 +44,41 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies
-        if: hashFiles('package-lock.json') != ''
+      - name: Install Node dependencies (pnpm — locked)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Node dependencies (npm — locked)
+        if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci
 
-      - name: Install Python dependencies
-        if: hashFiles('requirements.txt') != ''
+      - name: Install Node dependencies (no lock file)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == '' && hashFiles('package-lock.json') == ''
+        run: |
+          if [ -f pnpm-workspace.yaml ]; then
+            pnpm install
+          else
+            npm install
+          fi
+
+      - name: Install Python dependencies (uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv sync --frozen
+
+      - name: Install Python dependencies (pip)
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: pip install -r requirements.txt
 
       - name: Restore .NET dependencies
         if: hashFiles('*.sln', '*.csproj') != ''
         run: dotnet restore
 
-      - name: Build (Node)
-        if: hashFiles('package.json') != ''
+      - name: Build (pnpm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
+        run: pnpm run build
+
+      - name: Build (npm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') == ''
         run: npm run build
 
       - name: Build (.NET)
@@ -61,11 +90,10 @@ jobs:
 
       - name: Log in with Azure (Federated Credentials)
         run: |
-          azd auth login `
-            --client-id "${{ secrets.AZURE_CLIENT_ID }}" `
-            --federated-credential-provider "github" `
+          azd auth login \
+            --client-id "${{ secrets.AZURE_CLIENT_ID }}" \
+            --federated-credential-provider "github" \
             --tenant-id "${{ secrets.AZURE_TENANT_ID }}"
-        shell: pwsh
 
       - name: Deploy to staging
         run: azd deploy --environment staging --no-prompt
@@ -91,13 +119,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+        if: hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
+        with:
+          version: latest
+
       - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
         with:
           node-version: "22"
 
+      - uses: astral-sh/setup-uv@v4
+        if: hashFiles('uv.lock', 'pyproject.toml') != ''
+
       - uses: actions/setup-python@v5
-        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         with:
           python-version: "3.12"
 
@@ -106,20 +142,41 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Node dependencies
-        if: hashFiles('package-lock.json') != ''
+      - name: Install Node dependencies (pnpm — locked)
+        if: hashFiles('pnpm-lock.yaml') != ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Node dependencies (npm — locked)
+        if: hashFiles('package-lock.json') != '' && hashFiles('pnpm-lock.yaml') == ''
         run: npm ci
 
-      - name: Install Python dependencies
-        if: hashFiles('requirements.txt') != ''
+      - name: Install Node dependencies (no lock file)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml') == '' && hashFiles('package-lock.json') == ''
+        run: |
+          if [ -f pnpm-workspace.yaml ]; then
+            pnpm install
+          else
+            npm install
+          fi
+
+      - name: Install Python dependencies (uv)
+        if: hashFiles('uv.lock') != ''
+        run: uv sync --frozen
+
+      - name: Install Python dependencies (pip)
+        if: hashFiles('requirements.txt') != '' && hashFiles('uv.lock') == ''
         run: pip install -r requirements.txt
 
       - name: Restore .NET dependencies
         if: hashFiles('*.sln', '*.csproj') != ''
         run: dotnet restore
 
-      - name: Build (Node)
-        if: hashFiles('package.json') != ''
+      - name: Build (pnpm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') != ''
+        run: pnpm run build
+
+      - name: Build (npm)
+        if: hashFiles('package.json') != '' && hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') == ''
         run: npm run build
 
       - name: Build (.NET)
@@ -131,11 +188,10 @@ jobs:
 
       - name: Log in with Azure (Federated Credentials)
         run: |
-          azd auth login `
-            --client-id "${{ secrets.AZURE_CLIENT_ID }}" `
-            --federated-credential-provider "github" `
+          azd auth login \
+            --client-id "${{ secrets.AZURE_CLIENT_ID }}" \
+            --federated-credential-provider "github" \
             --tenant-id "${{ secrets.AZURE_TENANT_ID }}"
-        shell: pwsh
 
       - name: Deploy to production
         run: azd deploy --environment production --no-prompt
