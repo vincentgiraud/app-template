@@ -62,6 +62,8 @@ applyTo: "src/**,apps/**,packages/**,infra/**"
 
 # Tech Architecture — {Project Name}
 
+> When this spec conflicts with patterns in existing code, follow the code. Update this spec if the convention has intentionally changed.
+
 ## Tech Stack
 
 | Layer | Choice | Version | Justification |
@@ -119,13 +121,6 @@ applyTo: "src/**,apps/**,packages/**,infra/**"
 
 # Setup commands
 {step-by-step project initialisation}
-```
-
-## Key Configuration
-
-```{language}
-# {config file name}
-{essential configuration}
 ```
 
 ## Naming Conventions

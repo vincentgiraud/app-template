@@ -76,7 +76,7 @@ automated VAT calculations. Needs Stripe payments, PDF generation, and
 a client portal. Deploy to Azure, budget ~$150/mo.
 ```
 
-The Spec Planner interviews you, then generates implementation-ready specs (PRD, architecture, frontend/backend design, task plan) as `.instructions.md` files that Copilot loads automatically. If it detects Azure/compliance signals, it chains into the Stack Planner for infrastructure research.
+The Spec Planner interviews you, then generates convention specs (architecture, frontend/backend design) as `.instructions.md` files, appends product context to `copilot-instructions.md`, and creates a GitHub Project board with self-contained issues. If it detects Azure/compliance signals, it chains into the Stack Planner for infrastructure research.
 
 ### Option B: Start building directly
 
@@ -99,18 +99,18 @@ azd up             # Deploy to Azure
 
 ## What's Included
 
-### 20 AI Agents (2 Pipelines + 4 Cloud Agents)
+### 19 AI Agents (2 Pipelines + 4 Cloud Agents)
 
-**Pipeline 1: Spec Planner** — Generates a complete project spec from a plain-English idea.
+**Pipeline 1: Spec Planner** — Generates convention specs and a GitHub Project board from a plain-English idea.
 
 | Agent | Role |
 |-------|------|
-| `spec-planner` | Orchestrator — interviews user, coordinates 5 specialists + chains to Stack Planner |
-| `prd-writer` | User stories, features, acceptance criteria |
+| `spec-planner` | Orchestrator — interviews user, coordinates specialists + chains to Stack Planner |
+| `prd-writer` | Product context + feature specs for issue creation |
 | `tech-architect` | Stack selection, architecture, directory structure |
-| `frontend-designer` | Component hierarchy, page layouts, design system |
-| `backend-designer` | API endpoints, database schema, auth flows |
-| `task-planner` | Phased implementation plan with dependencies |
+| `frontend-designer` | UI conventions, component patterns, design system |
+| `backend-designer` | API conventions, database modeling rules, auth flows |
+| `feature-planner` | Post-bootstrap feature design + GitHub Issue creation |
 
 **Pipeline 2: Stack Planner** — Researches a compliance-ready Azure stack.
 
@@ -171,7 +171,7 @@ Architecture, frontend, backend, and task specs live in `.github/instructions/` 
 
 ```
 ├── .github/
-│   ├── agents/              # 20 AI agents (spec planner + stack planner + cloud agents)
+│   ├── agents/              # 19 AI agents (spec planner + stack planner + cloud agents)
 │   ├── instructions/        # Shared config for agent pipelines
 │   ├── prompts/             # Slash-command prompt templates
 │   ├── ISSUE_TEMPLATE/      # Structured issue templates
@@ -207,9 +207,9 @@ Every feature follows the same loop. Each phase has tools ready — you pick whe
 | Phase | What happens | You do | Agents/tools do |
 |-------|-------------|--------|-----------------|
 | **1. Ideate** | Describe what you want to build | Write a plain-English description | — |
-| **2. Spec** | Generate implementation-ready specs | Answer clarifying questions | `@Spec Planner` → PRD, architecture, frontend/backend design, task plan (6 agents) |
+| **2. Spec** | Generate convention specs + issues | Answer clarifying questions | `@Spec Planner` → convention specs, product context, GitHub Project board with issues |
 | **3. Stack** | Research Azure infrastructure | Confirm parameters | `@az-saas-planner` → compliance mapping, service comparison, cost estimate (10 agents, auto-chained) |
-| **4. Build** | Write code, implement features | Work on complex features in Agent mode | Cloud agent handles parallel issues (frontend-dev, test-writer, docs-updater) |
+| **4. Build** | Write code, implement features | Work on complex features in Agent mode | Cloud agent handles parallel issues (frontend-dev, test-writer, docs-updater). Use `@feature-planner` to add new features post-bootstrap. |
 | **5. Review** | Verify quality and security | Review PRs, approve/reject | CI: lint + test + security (parallel) → build → quality gate. `@Security Reviewer` for high-risk PRs |
 | **6. Deploy** | Ship to Azure | Merge to main (or manual trigger) | GitHub Actions: staging → smoke test → production via `azd` |
 | **7. Reflect** | Update compliance and security posture | Review docs quarterly | docs-updater agent keeps generated docs current |
@@ -224,8 +224,9 @@ Every feature follows the same loop. Each phase has tools ready — you pick whe
 
 This repo is configured for GitHub Copilot at every level:
 
-- **Spec generation**: 6 agents turn ideas into implementation-ready `.instructions.md` files.
+- **Spec generation**: Agents turn ideas into convention specs (`.instructions.md`) + a GitHub Project board with self-contained issues. Spec files define *patterns* (how to build); Issues define *features* (what to build).
 - **Azure stack research**: 10 agents find the cheapest compliant Azure stack for your SaaS.
+- **Feature planning**: `@feature-planner` reads your code + conventions, then creates self-contained issues for new features.
 - **Custom instructions** in `.github/copilot-instructions.md` enforce conventions, security, and GDPR rules.
 - **Cloud agents** in `.github/agents/` handle frontend, testing, and docs tasks autonomously.
 - **Slash commands**: `/find-cost-optimized-stack` for one-click Azure stack research.
@@ -236,6 +237,7 @@ After creating a repo from this template, update these files:
 
 | File | What to change |
 |------|---------------|
+| `.env.example` → `.env` | Copy and add your [fine-grained PAT](https://github.com/settings/tokens?type=beta) with actions, contents, issues, pull-requests permissions |
 | `.github/ISSUE_TEMPLATE/config.yml` | Replace `OWNER/REPO` with your actual GitHub path |
 | `docs/` | Generated by `@Spec Planner` — no manual setup needed |
 | `.github/copilot-instructions.md` | Adjust conventions to your preferences (or let `@Spec Planner` generate `project-tech-architecture.instructions.md` which overrides these) |

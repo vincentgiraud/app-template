@@ -1,5 +1,5 @@
 name: "Implementation Task"
-description: "Auto-generated from project task plan or manually created for development work"
+description: "Self-contained task for Copilot agent or human implementation"
 title: "[Task]: "
 labels: ["task"]
 body:
@@ -7,15 +7,52 @@ body:
     id: description
     attributes:
       label: Description
-      description: What needs to be built or changed.
+      description: What needs to be built or changed, and why.
     validations:
       required: true
 
   - type: textarea
-    id: files
+    id: user-stories
     attributes:
-      label: Files / Areas
-      description: Which files or directories are affected.
+      label: User Stories
+      description: Relevant user stories for this task.
+      placeholder: "As a [persona], I want to [action], so that [benefit]."
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How do we know this task is complete? List testable criteria.
+      placeholder: |
+        - [ ] User can ...
+        - [ ] API returns ...
+        - [ ] Tests cover ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: existing-code
+    attributes:
+      label: Existing Code This Touches
+      description: List specific file paths that need modification. Use 'None — greenfield' if nothing exists yet.
+      placeholder: |
+        - `src/api/routes/users.ts` — add new endpoint
+        - `src/components/UserProfile.tsx` — add notifications tab
+    validations:
+      required: false
+
+  - type: textarea
+    id: new-code
+    attributes:
+      label: New Code to Create
+      description: "Be specific: include table fields, endpoint shapes, component props."
+      placeholder: |
+        - **Database**: new `notifications` table (id, user_id, message, read, created_at)
+        - **API endpoints**: GET /api/v1/notifications (paginated list)
+        - **UI components**: NotificationBell in src/components/ui/
+        - **Tests**: unit tests for notification service
     validations:
       required: false
 
@@ -23,6 +60,7 @@ body:
     id: area
     attributes:
       label: Area
+      multiple: true
       options:
         - Frontend
         - Backend / API
@@ -30,6 +68,8 @@ body:
         - Shared / Packages
         - Functions
         - Documentation
+        - Testing
+        - Security
     validations:
       required: true
 
@@ -38,9 +78,10 @@ body:
     attributes:
       label: Complexity
       options:
-        - S (< 1 hour)
-        - M (1-4 hours)
-        - L (4+ hours)
+        - S (config, boilerplate, single-file)
+        - M (feature, multiple files, some logic)
+        - L (complex feature, business logic, edge cases)
+        - XL (cross-cutting, refactoring, integration)
     validations:
       required: true
 
@@ -48,7 +89,15 @@ body:
     id: dependencies
     attributes:
       label: Dependencies
-      description: Which tasks must be completed before this one.
-      placeholder: "Depends on #12, #13"
+      description: Which issues must be completed before this one.
+      placeholder: "Depends on #12, #13 — or 'None — can start immediately'"
     validations:
       required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Convention References
+        - Follow backend patterns: `.github/instructions/project-backend.instructions.md`
+        - Follow frontend patterns: `.github/instructions/project-frontend.instructions.md`
+        - Follow architecture: `.github/instructions/project-tech-architecture.instructions.md`

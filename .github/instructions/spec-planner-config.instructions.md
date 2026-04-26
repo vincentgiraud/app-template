@@ -6,19 +6,41 @@ description: "Use when generating project specs, PRDs, tech architecture, or imp
 
 ## Purpose
 
-This pipeline transforms a plain-English project idea into a complete set of implementation specs that GitHub Copilot (and other AI coding tools) can consume as context. The output is a set of `.instructions.md` files written directly into `.github/instructions/` — natively consumed by Copilot without any export/import step.
+This pipeline transforms a plain-English project idea into a complete set of implementation specs and a GitHub Project board. The output is:
+1. **Convention specs** (`.instructions.md` files) — patterns and rules for how to build, consumed by Copilot as context
+2. **Product context** — added to `copilot-instructions.md` so Copilot understands *what* the product is
+3. **GitHub Project board + Issues** — the living tracker for features and tasks, with self-contained issue bodies
 
 ## Output Files
 
-All specs are written to `.github/instructions/` with `applyTo` patterns so Copilot loads them automatically when editing relevant files.
+Convention specs are written to `.github/instructions/` with `applyTo` patterns so Copilot loads them automatically when editing relevant files.
 
 | File | Purpose | `applyTo` |
 |------|---------|-----------|
-| `project-prd.instructions.md` | Product requirements, user stories, acceptance criteria | `**` |
-| `project-tech-architecture.instructions.md` | Tech stack, architecture decisions, infrastructure | `src/**,apps/**,packages/**,infra/**` |
-| `project-frontend.instructions.md` | UI patterns, component guidelines, design system | `src/components/**,src/pages/**,src/app/**,apps/web/**` |
-| `project-backend.instructions.md` | API design, database schema, business logic patterns | `src/api/**,src/server/**,src/lib/**,apps/api/**,functions/**,packages/shared/**` |
-| `project-tasks.instructions.md` | Ordered implementation plan with phases and dependencies | _(no applyTo — loaded by description match only)_ |
+| `copilot-instructions.md` | Product context (identity, personas, scope) — appended to existing | `**` (implicit) |
+| `project-tech-architecture.instructions.md` | Tech stack, architecture decisions, directory structure, naming conventions | `src/**,apps/**,packages/**,infra/**` |
+| `project-frontend.instructions.md` | UI conventions — component patterns, design system, state management rules | `src/components/**,src/pages/**,src/app/**,apps/web/**` |
+| `project-backend.instructions.md` | API conventions — endpoint patterns, database modeling rules, auth flows, error handling | `src/api/**,src/server/**,src/lib/**,apps/api/**,functions/**,packages/shared/**` |
+
+### What is NOT a file
+
+| Concern | Where it lives | Why |
+|---------|---------------|-----|
+| Feature list / user stories | GitHub Issues (one issue per feature) | Issues are the living tracker — files go stale |
+| Task plan / implementation order | GitHub Project board (columns, milestones) | Status changes constantly |
+| Project status | Queried live via `gh` CLI when needed | Never committed — ephemeral per session |
+
+## Convention vs Registry Rule
+
+Spec files define **how to build** (patterns, naming, conventions), not **what exists** (specific endpoints, tables, components). The distinction:
+
+| Convention (goes in spec files) | Registry (does NOT go in spec files) |
+|---------------------------------|--------------------------------------|
+| "Tables must have id, created_at, updated_at" | "Users table has email, name, role columns" |
+| "REST endpoints follow /api/v1/{resource}" | "GET /api/v1/users returns user list" |
+| "Components use PascalCase in features/ dir" | "UserProfile component takes name, avatar props" |
+
+Specific tables, endpoints, and components are defined in **GitHub Issue bodies** for each feature and exist in **the code itself**.
 
 ## Spec Quality Standards
 
@@ -31,15 +53,15 @@ Every spec must meet these criteria:
 
 ### Consistency
 - All specs must reference the same tech stack (defined by tech-architect)
-- Database schema in backend spec must match entities in PRD
-- API endpoints in backend spec must serve all frontend views
-- Task plan must cover all features in PRD
+- Backend conventions must align with the architecture's framework choices
+- Frontend conventions must align with the architecture's UI library and directory structure
+- Convention specs must not contradict each other
 
 ### Actionability
-- A developer (or AI agent) reading only the specs should be able to implement without asking clarifying questions
+- A developer (or AI agent) reading the specs + an issue body should be able to implement without asking clarifying questions
 - Include file paths, naming conventions, and directory structure
-- Include example API request/response payloads
-- Include database field types and constraints
+- Include example patterns with concrete code skeletons
+- Convention specs should have ONE example per pattern to illustrate usage
 
 ### AI-Optimised
 - Use markdown headers for clear section boundaries
