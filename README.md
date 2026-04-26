@@ -2,6 +2,15 @@
 
 > SaaS web application with Microsoft 365 Copilot agent, hosted on Azure.
 
+## Who This Is For
+
+- **Solo founders / indie hackers** shipping SaaS on Azure with AI-assisted development
+- **Microsoft ISV partners** building apps for the Microsoft marketplace (web + M365 agents)
+- **Small teams** wanting a ready-made repo template with CI/CD, compliance (GDPR, SOC 2), and security (OWASP) baked in
+- **Copilot Enterprise / Pro+ users** who want to assign issues to the cloud agent and parallelize work
+
+Not for you if: you're on Claude Code / Cursor / Windsurf (see alternatives below), you don't use Azure, or you need a framework-specific starter (this is stack-agnostic).
+
 ## Platform
 
 This template is **opinionated and built for the GitHub + Azure stack**:
