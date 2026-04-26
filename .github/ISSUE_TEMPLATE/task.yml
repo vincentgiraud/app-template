@@ -89,8 +89,8 @@ body:
     id: dependencies
     attributes:
       label: Dependencies
-      description: Which issues must be completed before this one.
-      placeholder: "Depends on #12, #13 — or 'None — can start immediately'"
+      description: Describe what must exist before this task can start. Dependencies are tracked via GitHub issue relationships, not text references.
+      placeholder: "Requires auth endpoints and user table to exist — or 'None — can start immediately'"
     validations:
       required: false
 

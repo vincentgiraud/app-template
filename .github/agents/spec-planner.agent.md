@@ -216,7 +216,7 @@ gh issue create \
 - **Other**: {any other files: config, migrations, tests}
 
 ### Dependencies
-{Other issues this depends on, linked as #N, or 'None'}
+{Prose description of what must exist before this task can start, e.g., 'Requires auth endpoints and user table to exist' — or 'None — greenfield, can start immediately'}
 
 ## Convention References
 - Follow backend patterns: \`.github/instructions/project-backend.instructions.md\`
@@ -307,10 +307,21 @@ After creating issues, offer to auto-assign them to Copilot cloud agent. This re
    [Yes — assign unblocked / Yes — Phase 0+1 only / No — I'll assign manually]
 ```
 
-**Assignment guard** — for each issue, check before assigning:
-1. Does this issue have `Depends on #N` in the body? If yes, are ALL referenced issues closed?
-2. Was a `addBlockedBy` relationship set in Step 5e? If yes, is the blocking issue closed?
-3. Only assign if ALL dependencies are satisfied or the issue has no dependencies.
+**Assignment guard** — for each issue, query its blocking relationships before assigning:
+```bash
+gh api graphql -f query='
+  query($id: ID!) {
+    node(id: $id) {
+      ... on Issue {
+        trackedInIssues(first: 10) {
+          nodes { number state }
+        }
+      }
+    }
+  }' -f id="{ISSUE_NODE_ID}"
+```
+
+If any blocking issue has `state: OPEN`, skip this issue. Only assign if all blockers are `CLOSED` or no blockers exist.
 
 **If blocked**, skip and log:
 ```

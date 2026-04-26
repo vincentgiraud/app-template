@@ -133,7 +133,7 @@ gh issue create \
 - **Tests**: {what tests to write}
 
 ### Dependencies
-{Links to other issues as #N, or 'None — can start immediately'}
+{Prose description of what must exist before this task can start, e.g., 'Requires the client CRUD API endpoints to exist' — or 'None — can start immediately'}
 
 ## Convention References
 - Follow backend patterns: \`.github/instructions/project-backend.instructions.md\`
@@ -195,7 +195,6 @@ gh api graphql -f query='
 - If a Feature Request issue triggered this, make it the **parent** — all task issues become sub-issues
 - **Sub-issues** = parent feature → child tasks (always use for feature → task hierarchy)
 - **Blocked-by** = task B cannot start until task A is done (use for sequential dependencies within or across features)
-- Keep `Depends on #N` text in issue bodies as well (Copilot cloud agent reads the body, not GitHub relationships)
 - Track which issues are blocked — this is used in Step 7 to prevent premature Copilot assignment
 
 ### Step 6: Add to Project Board (if exists)
@@ -225,9 +224,21 @@ Offer to auto-assign the created issues to Copilot cloud agent with the appropri
    [Yes / No — I'll assign manually]
 ```
 
-**Assignment guard** — for each issue, check before assigning:
-1. Does this issue have `Depends on #N` in the body? If yes, are ALL referenced issues closed?
-2. Was a `addBlockedBy` relationship set in Step 5? If yes, is the blocking issue closed?
+**Assignment guard** — for each issue, query its blocking relationships before assigning:
+```bash
+gh api graphql -f query='
+  query($id: ID!) {
+    node(id: $id) {
+      ... on Issue {
+        trackedInIssues(first: 10) {
+          nodes { number state }
+        }
+      }
+    }
+  }' -f id="{ISSUE_NODE_ID}"
+```
+
+If any blocking issue has `state: OPEN`, skip this issue. Only assign if all blockers are `CLOSED` or no blockers exist.
 3. Only assign if ALL dependencies are satisfied (closed) or the issue has no dependencies.
 
 **If blocked**, skip the issue and log it:
