@@ -2,6 +2,20 @@
 
 > SaaS web application with Microsoft 365 Copilot agent, hosted on Azure.
 
+## Platform
+
+This template is **opinionated and built for the GitHub + Azure stack**:
+
+- **AI coding**: GitHub Copilot (VS Code agent mode + cloud agent)
+- **Work tracking**: GitHub Issues + GitHub Projects
+- **CI/CD**: GitHub Actions
+- **Hosting**: Azure (Container Apps, Functions, AD B2C, Key Vault)
+- **M365**: Declarative agents via M365 Agents Toolkit
+
+The `.agent.md` and `.instructions.md` files use [GitHub Copilot's agent/instruction format](https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions). The cloud agent setup (`copilot-setup-steps.yml`) is GitHub-specific. The CI/CD workflows are GitHub Actions.
+
+**This will not work with** Claude Code CLI, Cursor, Windsurf, or other AI coding tools — those use different file formats (CLAUDE.md, .cursorrules, etc.). If you use those tools, look at [gstack](https://github.com/garrytan/gstack), [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin), or [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) instead.
+
 ## Quick Start
 
 ### Option A: Start from an idea (Spec Planner)
