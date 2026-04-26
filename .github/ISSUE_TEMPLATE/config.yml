@@ -1,5 +1,6 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security Vulnerability
-    url: https://github.com/{owner}/{repo}/security/advisories/new
+    # TODO: Replace with your actual repo path after creating from this template
+    url: https://github.com/OWNER/REPO/security/advisories/new
     about: Report a security vulnerability privately via GitHub Security Advisories.
