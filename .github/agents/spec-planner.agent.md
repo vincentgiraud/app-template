@@ -163,8 +163,11 @@ the applyTo patterns, Copilot will automatically reference the relevant specs.
 
 💡 Next steps:
 1. Review the specs — edit any file to refine
-2. Start building — follow the task plan in project-tasks.instructions.md
-3. Ask Copilot to implement a specific task: "Implement Task 1.1 from project-tasks"
+2. Commit the generated specs: `git add -A && git commit -m "docs: add project specs"`
+3. Start building — pick one:
+   a. **VS Code Agent mode**: "Implement Task 1.1 from project-tasks"
+   b. **Cloud agent**: Create a GitHub Issue for a task, assign to Copilot → gets a PR
+   c. **Both in parallel**: Work on complex tasks in Agent mode, delegate simpler ones to cloud agent via Issues
 ```
 
 ## Error Handling
