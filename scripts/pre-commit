@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Pre-commit hook — runs template validation before every commit.
+# Install: cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Or:      cd .git/hooks && ln -sf ../../scripts/pre-commit pre-commit
+
+echo "Running template validation..."
+./scripts/validate-template.sh
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "Commit blocked — fix the errors above before committing."
+  echo "To bypass (not recommended): git commit --no-verify"
+  exit 1
+fi
