@@ -1,8 +1,8 @@
 name: Deploy to Azure
 
+# Deploy is manual-only until Azure infrastructure is provisioned.
+# After running `azd up`, change to trigger on push to main.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
