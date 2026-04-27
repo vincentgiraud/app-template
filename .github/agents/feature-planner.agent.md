@@ -195,21 +195,9 @@ gh api graphql -f query='
 - If a Feature Request issue triggered this, make it the **parent** — all task issues become sub-issues
 - **Sub-issues** = parent feature → child tasks (always use for feature → task hierarchy)
 - **Blocked-by** = task B cannot start until task A is done (use for sequential dependencies within or across features)
-- Track which issues are blocked — this is used in Step 7 to prevent premature Copilot assignment
+- Track which issues are blocked — this is used in Step 6 to prevent premature Copilot assignment
 
-### Step 6: Add to Project Board (if exists)
-
-Find the existing project and add new issues. They'll appear in "Todo" by default and auto-move when assigned/closed:
-
-```bash
-# Find existing project
-PROJECT_NUMBER=$(gh project list --owner {owner} --format json | jq -r '.projects[0].number')
-
-# Add each new issue
-gh project item-add $PROJECT_NUMBER --owner {owner} --url {issue-url}
-```
-
-### Step 7: Auto-assign issues to Copilot (optional)
+### Step 6: Auto-assign issues to Copilot (optional)
 
 Offer to auto-assign the created issues to Copilot cloud agent with the appropriate custom agent.
 
@@ -300,7 +288,7 @@ gh api graphql -f query='mutation {
 
 > **Note**: `replaceActorsForAssignable` replaces ALL assignees. Copilot will be the sole assignee.
 
-### Step 8: Summary
+### Step 7: Summary
 
 ```
 ✅ FEATURE PLANNED: {Feature Name}
